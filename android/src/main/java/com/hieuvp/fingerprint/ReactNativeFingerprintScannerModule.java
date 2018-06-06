@@ -118,7 +118,7 @@ public class ReactNativeFingerprintScannerModule extends ReactContextBaseJavaMod
     public void biometryType(final Promise promise) {
         String errorMessage = getErrorMessage();
         if (errorMessage != null) {
-            promise.resolve("None");
+            promise.reject(errorMessage, errorMessage);
         } else {
             promise.resolve("TouchID");
         }

@@ -26,7 +26,7 @@ RCT_EXPORT_METHOD(isSensorAvailable: (RCTResponseSenderBlock)callback)
     }
 }
 
-RCT_EXPORT_METHOD(biometryType: (RCTResponseSenderBlock)callback)
+RCT_REMAP_METHOD(biometryType, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
   LAContext *context = [[LAContext alloc] init];
   NSError *error;
@@ -35,20 +35,20 @@ RCT_EXPORT_METHOD(biometryType: (RCTResponseSenderBlock)callback)
     if (@available(iOS 11.0, *)) {
       switch (context.biometryType) {
         case LABiometryTypeTouchID:
-          callback(@[[NSNull null], @"TouchID"]);
+          resolve(@"TouchID");
           break;
         case LABiometryTypeFaceID:
-          callback(@[[NSNull null], @"FaceID"]);
+          resolve(@"FaceID");
           break;
         default:
-          callback(@[[NSNull null], @"None"]);
+          resolve(@"None");
           break;
       }
     } else {
-      callback(@[[NSNull null], @"TouchID"]);
+      resolve(@"TouchID");
     }
   } else {
-    callback(@[[NSNull null], @"None"]);
+    resolve(@"None");
   }
 }
 
