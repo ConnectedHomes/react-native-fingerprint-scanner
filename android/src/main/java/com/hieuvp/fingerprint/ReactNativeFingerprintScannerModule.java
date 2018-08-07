@@ -9,6 +9,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 import com.wei.android.lib.fingerprintidentify.FingerprintIdentify;
 import com.wei.android.lib.fingerprintidentify.base.BaseFingerprint.FingerprintIdentifyExceptionListener;
 import com.wei.android.lib.fingerprintidentify.base.BaseFingerprint.FingerprintIdentifyListener;
+import android.hardware.fingerprint.FingerprintManager;
 
 public class ReactNativeFingerprintScannerModule extends ReactContextBaseJavaModule
         implements LifecycleEventListener {
@@ -66,6 +67,11 @@ public class ReactNativeFingerprintScannerModule extends ReactContextBaseJavaMod
         return null;
     }
 
+     private boolean checkFingerPrintEnrolled() {
+       FingerprintManager fingerprintManager = mReactContext.getSystemService(FingerprintManager.class);
+       return fingerprintManager.hasEnrolledFingerprints(); 
+    }
+
     @ReactMethod
     public void authenticate(final Promise promise) {
         final String errorMessage = getErrorMessage();
@@ -106,11 +112,10 @@ public class ReactNativeFingerprintScannerModule extends ReactContextBaseJavaMod
 
     @ReactMethod
     public void isSensorAvailable(final Promise promise) {
-        String errorMessage = getErrorMessage();
-        if (errorMessage != null) {
-            promise.reject(errorMessage, errorMessage);
-        } else {
-            promise.resolve(true);
+        if (checkFingerPrintEnrolled()) {
+           promise.resolve(true);
+        }else {
+           promise.reject("FingerPrintNotEnrolled", "FingerPrintNotEnrolled");
         }
     }
 
