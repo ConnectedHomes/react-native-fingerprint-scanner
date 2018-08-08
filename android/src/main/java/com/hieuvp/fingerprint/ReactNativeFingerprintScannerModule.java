@@ -68,8 +68,14 @@ public class ReactNativeFingerprintScannerModule extends ReactContextBaseJavaMod
     }
 
      private boolean checkFingerPrintEnrolled() {
+         if(Build.VERSION.SDK_INT<23){
+             return false;
+         }
        FingerprintManager fingerprintManager = mReactContext.getSystemService(FingerprintManager.class);
+       if(fingerprintManager!=null){
        return fingerprintManager.hasEnrolledFingerprints(); 
+       }
+       return false;
     }
 
     @ReactMethod
