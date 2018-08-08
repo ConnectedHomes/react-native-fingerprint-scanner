@@ -10,6 +10,7 @@ import com.wei.android.lib.fingerprintidentify.FingerprintIdentify;
 import com.wei.android.lib.fingerprintidentify.base.BaseFingerprint.FingerprintIdentifyExceptionListener;
 import com.wei.android.lib.fingerprintidentify.base.BaseFingerprint.FingerprintIdentifyListener;
 import android.hardware.fingerprint.FingerprintManager;
+import android.os.Build;
 
 public class ReactNativeFingerprintScannerModule extends ReactContextBaseJavaModule
         implements LifecycleEventListener {
@@ -121,7 +122,7 @@ public class ReactNativeFingerprintScannerModule extends ReactContextBaseJavaMod
         if (checkFingerPrintEnrolled()) {
            promise.resolve(true);
         }else {
-           promise.reject("FingerPrintNotEnrolled", "FingerPrintNotEnrolled");
+           promise.reject("FingerprintScannerNotSupported", "FingerprintScannerNotSupported");
         }
     }
 
