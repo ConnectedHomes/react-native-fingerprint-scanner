@@ -115,6 +115,11 @@ public class ReactNativeFingerprintScannerModule extends ReactContextBaseJavaMod
         }
     }
 
+     @ReactMethod
+     public void isFingerPrintIdentifyRefresh() {
+        mFingerprintIdentify = null;
+    }
+
     @ReactMethod
     public void biometryType(final Promise promise) {
         String errorMessage = getErrorMessage();
