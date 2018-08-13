@@ -106,7 +106,7 @@ public class ReactNativeFingerprintScannerModule extends ReactContextBaseJavaMod
 
     @ReactMethod
     public void isSensorAvailable(final Promise promise) {
-        mFingerprintIdentify = null
+        mFingerprintIdentify = null;
         String errorMessage = getErrorMessage();
         if (errorMessage != null) {
             promise.reject(errorMessage, errorMessage);
