@@ -5,3 +5,4 @@ const { ReactNativeFingerprintScanner } = NativeModules;
 export default () => {
     ReactNativeFingerprintScanner.isFingerPrintIdentifyRefresh()
 }
+
