@@ -115,7 +115,7 @@ public class ReactNativeFingerprintScannerModule extends ReactContextBaseJavaMod
     }
 
      @ReactMethod
-     public void isFingerPrintIdentifyRefresh() {
+     public void resetFingerPrintIdentify() {
         mFingerprintIdentify = null;
     }
 

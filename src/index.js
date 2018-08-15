@@ -2,7 +2,7 @@ import authenticate from './authenticate';
 import isSensorAvailable from './isSensorAvailable';
 import biometryType from './biometryType';
 import release from './release';
-import isFingerPrintIdentifyRefresh from './isFingerPrintIdentifyRefresh';
+import resetFingerPrintIdentify from './resetFingerPrintIdentify';
 
 
 export default {
@@ -10,5 +10,5 @@ export default {
   release,
   isSensorAvailable,
   biometryType,
-  isFingerPrintIdentifyRefresh
+  resetFingerPrintIdentify
 };
