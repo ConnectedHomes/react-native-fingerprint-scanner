@@ -43,6 +43,32 @@ RCT_EXPORT_METHOD(isSensorAvailable: (RCTResponseSenderBlock)callback)
     }
 }
 
+RCT_REMAP_METHOD(biometryType, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+  LAContext *context = [[LAContext alloc] init];
+  NSError *error;
+  
+  if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+    if (@available(iOS 11.0, *)) {
+      switch (context.biometryType) {
+        case LABiometryTypeTouchID:
+          resolve(@"TouchID");
+          break;
+        case LABiometryTypeFaceID:
+          resolve(@"FaceID");
+          break;
+        default:
+          resolve(@"None");
+          break;
+      }
+    } else {
+      resolve(@"TouchID");
+    }
+  } else {
+    resolve(@"None");
+  }
+}
+
 RCT_EXPORT_METHOD(authenticate: (NSString *)reason
                   fallback: (BOOL)fallbackEnabled
                   callback: (RCTResponseSenderBlock)callback)

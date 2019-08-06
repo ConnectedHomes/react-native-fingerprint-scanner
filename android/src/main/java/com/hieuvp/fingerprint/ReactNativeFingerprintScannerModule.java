@@ -127,4 +127,19 @@ public class ReactNativeFingerprintScannerModule extends ReactContextBaseJavaMod
             promise.resolve(TYPE_FINGERPRINT);
         }
     }
+
+     @ReactMethod
+     public void resetFingerPrintIdentify() {
+        mFingerprintIdentify = null;
+    }
+
+    @ReactMethod
+    public void biometryType(final Promise promise) {
+        String errorMessage = getErrorMessage();
+        if (errorMessage != null) {
+            promise.resolve("None");
+        } else {
+            promise.resolve("TouchID");
+        }
+    }
 }
