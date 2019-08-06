@@ -52,7 +52,7 @@ Samsung and MeiZu's Fingerprint SDK supports most devices which system versions 
 
 #### Android
 
-1. Open up `android/app/src/main/java/[...]/MainActivity.java`
+1. Open up `android/app/src/main/java/[...]/MainApplication.java`
   - Add `import com.hieuvp.fingerprint.ReactNativeFingerprintScannerPackage;` to the imports at the top of the file
   - Add `new ReactNativeFingerprintScannerPackage()` to the list returned by the `getPackages()` method
 2. Append the following lines to `android/settings.gradle`:
@@ -64,6 +64,23 @@ Samsung and MeiZu's Fingerprint SDK supports most devices which system versions 
   	```
     compile project(':react-native-fingerprint-scanner')
   	```
+
+### App Permissions
+
+Add the following permissions to their respective files:
+
+In your `AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.USE_FINGERPRINT" />
+```
+
+In your `Info.plist`:
+
+```xml
+<key>NSFaceIDUsageDescription</key>
+<string>$(PRODUCT_NAME) requires FaceID access to allows you quick and secure access.</string>
+```
 
 ### Extra Configuration
 
@@ -77,15 +94,17 @@ Samsung and MeiZu's Fingerprint SDK supports most devices which system versions 
           targetSdkVersion 25
     ```
 
-2. Add necessary rules to `android/app/proguard-rules.pro`
+2. Add necessary rules to `android/app/proguard-rules.pro` if you are using proguard:
     ```
     # MeiZu Fingerprint
 
     -keep class com.fingerprints.service.** { *; }
+    -dontwarn com.fingerprints.service.**
 
     # Samsung Fingerprint
 
     -keep class com.samsung.android.sdk.** { *; }
+    -dontwarn com.samsung.android.sdk.**
     ```
 
 ## Example
@@ -94,7 +113,8 @@ Samsung and MeiZu's Fingerprint SDK supports most devices which system versions 
 
 **iOS Implementation**
 ```javascript
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { AlertIOS } from 'react-native';
 import FingerprintScanner from 'react-native-fingerprint-scanner';
 
@@ -127,7 +147,9 @@ export default FingerprintPopup;
 
 **Android Implementation**
 ```javascript
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
 import {
   Alert,
   Image,
@@ -220,12 +242,15 @@ export default FingerprintPopup;
 ### `isSensorAvailable()`: (Android, iOS)
 Checks if Fingerprint Scanner is able to be used by now.
 
-- Returns a `Promise`
+- Returns a `Promise<string>`
+- `biometryType: String` - The type of biometric authentication supported by the device.
+- `error: FingerprintScannerError { name, message, biometric }` - The name and message of failure and the biometric type in use.
 
 ```javascript
 componentDidMount() {
   FingerprintScanner
     .isSensorAvailable()
+    .then(biometryType => this.setState({ biometryType }))
     .catch(error => this.setState({ errorMessage: error.message }));
 }
 ```
@@ -274,7 +299,7 @@ componentDidMount() {
 ```
 
 ### `release()`: (Android)
-Stops fingerprint scanner listener and optimizes memory.
+Stops fingerprint scanner listener, releases cache of internal state in native code.
 
 - Returns a `Void`
 
@@ -283,6 +308,14 @@ componentWillUnmount() {
   FingerprintScanner.release();
 }
 ```
+
+### `Types of Biometrics`
+
+| Value | OS |
+|---|---|
+| Touch ID | iOS |
+| Face ID | iOS |
+| Fingerprint | Android |
 
 ### `Errors`
 
@@ -298,6 +331,7 @@ componentWillUnmount() {
 | FingerprintScannerNotEnrolled | Authentication could not start because Fingerprint Scanner has no enrolled fingers |
 | FingerprintScannerUnknownError | Could not authenticate for an unknown reason |
 | FingerprintScannerNotSupported | Device does not support Fingerprint Scanner |
+| DeviceLocked | Authentication was not successful, the device currently in a lockout of 30 seconds |
 
 ## License
 
