@@ -6,8 +6,6 @@
 #import "RCTUtils.h"
 #endif
 
-#import <LocalAuthentication/LocalAuthentication.h>
-
 @implementation ReactNativeFingerprintScanner
 
 RCT_EXPORT_MODULE();
@@ -18,10 +16,29 @@ RCT_EXPORT_METHOD(isSensorAvailable: (RCTResponseSenderBlock)callback)
     NSError *error;
 
     if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
-        callback(@[[NSNull null], @true]);
+        callback(@[[NSNull null], [self getBiometryType:context]]);
     } else {
-        // Device does not support FingerprintScanner
-        callback(@[RCTMakeError(@"FingerprintScannerNotSupported", nil, nil)]);
+        NSString *code;
+        NSString *message;
+
+        switch (error.code) {
+            case LAErrorTouchIDNotAvailable:
+                code = @"FingerprintScannerNotAvailable";
+                message = [self getBiometryType:context];
+                break;
+
+            case LAErrorTouchIDNotEnrolled:
+                code = @"FingerprintScannerNotEnrolled";
+                message = [self getBiometryType:context];
+                break;
+
+            default:
+                code = @"FingerprintScannerNotSupported";
+                message = nil;
+                break;
+        }
+
+        callback(@[RCTJSErrorFromCodeMessageAndNSError(code, message, nil)]);
         return;
     }
 }
@@ -110,19 +127,33 @@ RCT_EXPORT_METHOD(authenticate: (NSString *)reason
                  }
 
                  NSLog(@"Authentication failed: %@", errorReason);
-                 callback(@[RCTMakeError(errorReason, nil, nil)]);
+                 callback(@[RCTJSErrorFromCodeMessageAndNSError(errorReason, errorReason, nil)]);
                  return;
              }
 
-             // Authenticated Successfully
-             callback(@[[NSNull null], @"Authenticated with Fingerprint Scanner."]);
+             if (success) {
+                 // Authenticated Successfully
+                 callback(@[[NSNull null], @"Authenticated with Fingerprint Scanner."]);
+                 return;
+             }
+
+             callback(@[RCTJSErrorFromCodeMessageAndNSError(@"AuthenticationFailed", @"AuthenticationFailed", nil)]);
          }];
 
     } else {
         // Device does not support FingerprintScanner
-        callback(@[RCTMakeError(@"FingerprintScannerNotSupported", nil, nil)]);
+        callback(@[RCTJSErrorFromCodeMessageAndNSError(@"FingerprintScannerNotSupported", @"FingerprintScannerNotSupported", nil)]);
         return;
     }
+}
+
+- (NSString *)getBiometryType:(LAContext *)context
+{
+    if (@available(iOS 11, *)) {
+        return context.biometryType == LABiometryTypeFaceID ? @"Face ID" : @"Touch ID";
+    }
+
+    return @"Touch ID";
 }
 
 @end
