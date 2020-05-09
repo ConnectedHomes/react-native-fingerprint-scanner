@@ -328,8 +328,7 @@ public class ReactNativeFingerprintScannerModule
 
     @ReactMethod
     public void biometryType(final Promise promise) {
-        String errorMessage = legacyGetErrorMessage();
-        if (errorMessage != null) {
+        if (legacyGetErrorMessage() != null) {
             promise.resolve("None");
         } else {
             promise.resolve("TouchID");
